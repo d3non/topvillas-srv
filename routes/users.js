@@ -3,8 +3,8 @@ const router = express.Router();
 const Joi = require("joi");
 const Bcrypt = require("bcryptjs");
 const usersStore = require("../store/users");
-const validateWith = require("../middleware/validation");
 const db = require("../models/user");
+const validateWith = require("../middleware/validation");
 
 const schema = {
   name: Joi.string().required().min(2),
@@ -12,38 +12,25 @@ const schema = {
   password: Joi.string().required().min(5),
 };
 
-router.post("/", validateWith(schema), (req, res) => {
+router.post("/", validateWith(schema), async (req, res) => {
   let { name, email, password } = req.body;
-  let pwdOri = password;
 
-  if (usersStore.getUserByEmail(email))
+  if (db.findOne({ email: email }).exec())
     return res
       .status(400)
-      .send({ error: "A user with the given email already exists." });
+      .send({ error: "Un usuario con el correo ingresado ya existe" });
 
+  //Hash password before persistance
   password = Bcrypt.hashSync(password, 10);
   const user = { name, email, password };
 
-  console.log("Saving USER");
-
-  db.create(user)
-    .then((response) => {
-      user.password = pwdOri;
-      //res.json({ successful: response });
-      console.log(user);
-      res.status(201).send(user);
-    })
-    .catch((err) => {
-      console.log("Error: " + err);
-      res.json({ error: err });
-    });
-
-  /*var user = new UserModel(request.body);
-  var result = await user.save();
-  response.send(result);
-  
-  const user = { name, email, password };
-  usersStore.addUser(user);*/
+  //Save user
+  try {
+    var result = await db.create(user);
+    res.status(201).send(user);
+  } catch (error) {
+    res.status(500).send(error);
+  }
 });
 
 router.get("/", (req, res) => {

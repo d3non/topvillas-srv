@@ -2,7 +2,9 @@ const express = require("express");
 const router = express.Router();
 const Joi = require("joi");
 const jwt = require("jsonwebtoken");
-const usersStore = require("../store/users");
+const Bcrypt = require("bcryptjs");
+//const usersStore = require("../store/users");
+const db = require("../models/user");
 const validateWith = require("../middleware/validation");
 
 const schema = {
@@ -10,11 +12,11 @@ const schema = {
   password: Joi.string().required().min(5),
 };
 
-router.post("/", validateWith(schema), (req, res) => {
+router.post("/", validateWith(schema), async (req, res) => {
   const { email, password } = req.body;
-  const user = usersStore.getUserByEmail(email);
-  console.log(user);
-  if (!user || user.password !== password)
+  const user = await db.findOne({ email: email }).exec();
+
+  if (!user || !Bcrypt.compareSync(password, user.password))
     return res.status(400).send({ error: "Invalid email or password." });
 
   const token = jwt.sign(
