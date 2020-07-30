@@ -15,7 +15,7 @@ const schema = {
 router.post("/", validateWith(schema), async (req, res) => {
   let { name, email, password } = req.body;
 
-  if (db.findOne({ email: email }).exec())
+  if (await db.findOne({ email: email }).exec())
     return res
       .status(400)
       .send({ error: "Un usuario con el correo ingresado ya existe" });

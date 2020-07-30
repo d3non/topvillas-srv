@@ -17,7 +17,7 @@ router.post("/", validateWith(schema), async (req, res) => {
   const user = await db.findOne({ email: email }).exec();
 
   if (!user || !Bcrypt.compareSync(password, user.password))
-    return res.status(400).send({ error: "Invalid email or password." });
+    return res.status(400).send({ error: "Email o contraseña incorrectos" });
 
   const token = jwt.sign(
     { userId: user.id, name: user.name, email },

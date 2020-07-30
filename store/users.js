@@ -20,9 +20,9 @@ const getUserById = (id) => users.find((user) => user.id === id);
 
 const getUserByEmail = (email) => users.find((user) => user.email === email);
 
-//const addUser = (user) => db.create(user);
+const addUser = (user) => db.create(user);
 
-const addUser = (user) => {
+/*const addUser = (user) => {
   db.create(user)
     .then((response) => {
       return response;
@@ -33,7 +33,7 @@ const addUser = (user) => {
       return err;
       //res.json({ error: err });
     });
-};
+};*/
 
 module.exports = {
   getUsers,

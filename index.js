@@ -34,6 +34,7 @@ const MONGODB_URI =
 mongoose.Promise = Promise;
 mongoose.set("useCreateIndex", true);
 mongoose.connect(MONGODB_URI);
+process.env.TZ = "America/Mexico_City";
 
 const db = mongoose.connection;
 
