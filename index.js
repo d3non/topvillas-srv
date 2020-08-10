@@ -6,6 +6,7 @@ const users = require("./routes/users");
 const user = require("./routes/user");
 const auth = require("./routes/auth");
 const my = require("./routes/my");
+require("dotenv").config();
 const messages = require("./routes/messages");
 const expoPushTokens = require("./routes/expoPushTokens");
 const helmet = require("helmet");
@@ -29,11 +30,9 @@ app.use("/api/my", my);
 app.use("/api/expoPushTokens", expoPushTokens);
 app.use("/api/messages", messages);
 
-const MONGODB_URI =
-  "mongodb+srv://topadmin:hreBM6Ac6yruni5@cluster0.psozw.mongodb.net/topvillas?retryWrites=true&w=majority";
 mongoose.Promise = Promise;
 mongoose.set("useCreateIndex", true);
-mongoose.connect(MONGODB_URI);
+mongoose.connect(process.env.MONGODB_URI);
 process.env.TZ = "America/Mexico_City";
 
 const db = mongoose.connection;
@@ -47,7 +46,7 @@ db.on("error", function (error) {
 db.once("open", function () {
   console.log("Mongoose connection successfuly.");
   // start the server, listen on port 3000
-  const port = process.env.PORT || config.get("port");
+  const port = process.env.PORT;
   app.listen(port, function () {
     console.log(`Server started on port ${port}...`);
   });
